@@ -280,7 +280,15 @@ func SearchDoc(langSlug, query string) ([]DocEntry, error) {
 
 // ReadDocContent reads the content of a specific documentation HTML file.
 func ReadDocContent(langSlug, entryPath string) (string, error) {
-	contentURL := fmt.Sprintf("%s%s/%s.html", docsBaseURL, langSlug, entryPath)
+	// Handle paths with fragments (e.g., "qscxmltabledata#foreachInfo")
+	// The .html extension should be added before the fragment, not after
+	basePath := entryPath
+	fragment := ""
+	if idx := strings.Index(entryPath, "#"); idx != -1 {
+		basePath = entryPath[:idx]
+		fragment = entryPath[idx:]
+	}
+	contentURL := fmt.Sprintf("%s%s/%s.html%s", docsBaseURL, langSlug, basePath, fragment)
 	log.Printf("Fetching content from: %s\n", contentURL)
 	resp, err := http.Get(contentURL)
 	if err != nil {
