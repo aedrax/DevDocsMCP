@@ -282,11 +282,9 @@ func SearchDoc(langSlug, query string) ([]DocEntry, error) {
 func ReadDocContent(langSlug, entryPath string) (string, error) {
 	// Handle paths with fragments (e.g., "qscxmltabledata#foreachInfo")
 	// The .html extension should be added before the fragment, not after
-	basePath := entryPath
-	fragment := ""
-	if idx := strings.Index(entryPath, "#"); idx != -1 {
-		basePath = entryPath[:idx]
-		fragment = entryPath[idx:]
+	basePath, fragment, found := strings.Cut(entryPath, "#")
+	if found {
+		fragment = "#" + fragment
 	}
 	contentURL := fmt.Sprintf("%s%s/%s.html%s", docsBaseURL, langSlug, basePath, fragment)
 	log.Printf("Fetching content from: %s\n", contentURL)
